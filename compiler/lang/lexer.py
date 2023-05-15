@@ -3,6 +3,11 @@ from compiler.lang.common.token import Token, TokenKind, characters, characters_
 from compiler.lang.common.error import SpanError
 
 
+# Some kind of error is causing spans to be WAY off
+# initially thought it was multiline related, but
+# it seems to be something else.
+# todo: fix span issue
+
 class Lexer:
     def __init__(self, filename: str, text: str) -> None:
         self.filename = filename

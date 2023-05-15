@@ -15,6 +15,7 @@ class SpanError(SphynxError):
 
     def print_error(self) -> None:
         """Prints the error to the terminal."""
+        # todo: multiline errors don't work, fix that
         print(self.span)
         print(f"\u001b[31m{self.message}\u001b[0m")
         with open(self.span.filename, "r") as f:
@@ -24,7 +25,7 @@ class SpanError(SphynxError):
         max_line = min(len(lines), self.span.end.line + context)
         line_no_width = max(3, len(str(max_line)))
         for line_num, line in enumerate(lines[min_line:max_line], start=min_line):
-            line_number = f"{(line_num + min_line):0>{line_no_width}}"
+            line_number = f"{line_num+1:0>{line_no_width}}"
             if line_num + 1 == self.span.start.line:
                 line = line[:self.span.start.column-1] + f"\u001b[31m{line[self.span.start.column-1:self.span.end.column-1]}\u001b[0m" + line[self.span.end.column-1:]
                 print(f"{line_number} │{line}")
