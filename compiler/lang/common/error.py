@@ -24,9 +24,9 @@ class SpanError(SphynxError):
         max_line = min(len(lines), self.span.end.line + context)
         line_no_width = max(3, len(str(max_line)))
         for line_num, line in enumerate(lines[min_line:max_line], start=min_line):
-            line_number = f"{(line_num + min_line + 1):0>{line_no_width}}"
+            line_number = f"{(line_num + min_line):0>{line_no_width}}"
             if line_num + 1 == self.span.start.line:
-                line = line[:self.span.start.column-1] + f"\u001b[31m{line[self.span.start.column-1:self.span.end.column]}\u001b[0m" + line[self.span.end.column:]
+                line = line[:self.span.start.column-1] + f"\u001b[31m{line[self.span.start.column-1:self.span.end.column-1]}\u001b[0m" + line[self.span.end.column-1:]
                 print(f"{line_number} │{line}")
                 connector = "└" if line_num+1 == max_line else "├"
                 print(f"{' '*(line_no_width+1)}{connector}{'─' * (self.span.start.column-1)}\u001b[31m{'^' * (self.span.end.column - self.span.start.column)}\u001b[0m {self.flag_text}")

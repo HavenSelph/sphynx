@@ -12,6 +12,7 @@ class TokenKind(Enum):
     Else = auto()
     While = auto()
     As = auto()
+    Fn = auto()
 
     # Symbols
     LeftParen = auto()
@@ -94,9 +95,14 @@ characters_match = [key[0] for key in sorted_keys]
 keywords = {
     # Assignment
     "const": TokenKind.Const,
+
+    # Control flow
     "if": TokenKind.If,
     "else": TokenKind.Else,
     "while": TokenKind.While,
+
+    # General
+    "fn": TokenKind.Fn,
 
     # Postfix
     "as": TokenKind.As,

@@ -44,6 +44,17 @@ class While(Node):
         return f"While({self.condition}, {self.body})"
 
 
+class Function(Node):
+    def __init__(self, span: Span, name: str, args: list[str], body: Node) -> None:
+        super().__init__(span)
+        self.name = name
+        self.args = args
+        self.body = body
+
+    def __repr__(self) -> str:
+        return f"Function({self.name}, {self.args}, {self.body})"
+
+
 class VariableReference(Node):
     def __init__(self, span: Span, name: str) -> None:
         super().__init__(span)

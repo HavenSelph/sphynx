@@ -52,6 +52,7 @@ class Parser:
             case TokenKind.Const: raise NotImplementedError("Const statements not implemented")
             case TokenKind.If: return self.parse_if()
             case TokenKind.While: return self.parse_while()
+            case TokenKind.Fn: return self.parse_function()
             case _: return self.parse_expression()
 
     def parse_if(self):
@@ -74,6 +75,20 @@ class Parser:
         condition = self.parse_expression()
         body = self.parse_block()
         return ast.While(start.extend(self.current.span), condition, body)
+
+    def parse_function(self):
+        start = self.current.span
+        self.advance()
+        name = self.consume(TokenKind.Identifier).data
+        self.consume(TokenKind.LeftParen)
+        parameters = []
+        while self.current.kind != TokenKind.RightParen:
+            parameters.append(self.consume(TokenKind.Identifier).data)
+            if self.current.kind != TokenKind.Comma:
+                break
+        self.consume(TokenKind.RightParen, "Maybe you forgot a comma?")
+        body = self.parse_block()
+        return ast.Function(start.extend(self.current.span), name, parameters, body)
 
     def parse_expression(self):
         return self.parse_assignment()
@@ -176,9 +191,13 @@ class Parser:
         left = self.parse_atom()
         match self.current.kind:
             case TokenKind.As:
-                start = self.current.span
+                start = left.span
                 self.advance()
                 left = ast.Cast(start.extend(self.current.span), left, self.parse_atom())
+            case TokenKind.Colon:
+                start = left.span
+                self.advance()
+                raise SpanError(start.extend(self.current.span), "Type annotations are not yet supported")
         return left
 
     def parse_atom(self):
