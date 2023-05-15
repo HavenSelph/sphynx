@@ -5,7 +5,7 @@ from time import perf_counter
 
 import compiler.lang.common.error
 from compiler import __version__, __author__, __license__  # noqa
-from compiler.lang import lexer as _lexer, parser as _parser
+from compiler.lang import lexer as _lexer, parser as _parser, compiler as _compiler
 
 argparser = argparse.ArgumentParser(description="Compiler for Sphynx-Language (.spx)")
 argparser.add_argument("file", type=str, help="The file to compile")
@@ -43,4 +43,11 @@ except compiler.lang.common.error.SphynxError as e:
 if args.verbose:
     print(f"Parsed in {perf_counter() - start:.4f}s")
     print(ast)
+
+try:
+    comp = _compiler.Compiler(str(file), ast)
+    comp.compile()
+except compiler.lang.common.error.SphynxError as e:
+    e.print_error()
+    raise
 print(f"Finished in {perf_counter() - start:.4f}s")
