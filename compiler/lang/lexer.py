@@ -84,6 +84,8 @@ class Lexer:
                             self.advance_many(len(key))
                             self.push(characters[key], None, start)
                             break
+                    else:
+                        raise SpanError(self.span(self.location), f"Unexpected character '{self.cur}'")
                 case _:
                     raise SpanError(self.span(self.location), f"Unexpected character '{self.cur}'")
         self.push_simple(TokenKind.EOF)
