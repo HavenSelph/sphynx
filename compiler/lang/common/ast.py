@@ -13,6 +13,16 @@ class Node(ABC):
         ...
 
 
+class Block(Node):
+    def __init__(self, span: Span, statements: list[Node]):
+        super().__init__(span)
+        self.statements = statements
+
+    def __repr__(self):
+        newline = "\n"
+        return f"Block({newline if self.statements else ''}{newline.join(map(repr, self.statements))}{newline if self.statements else ''})"
+
+
 class VariableReference(Node):
     def __init__(self, span: Span, name: str) -> None:
         super().__init__(span)

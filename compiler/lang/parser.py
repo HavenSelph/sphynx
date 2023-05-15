@@ -23,11 +23,24 @@ class Parser:
         else:
             raise SpanError(self.current.span, f"Expected {kind}, got {self.current.kind}", msg)
 
-    def parse(self):
-        return self.parse_block()
+    def consume_line_end(self, msg: str=None) -> None:
+        if self.current.kind != TokenKind.Semicolon \
+                and not self.current.new_line_before \
+                and self.current.kind != TokenKind.EOF:
+            raise SpanError(self.current.span, f"Expected line end, got {self.current.kind}", msg)
+        self.advance()
 
-    def parse_block(self):
-        return self.parse_statement()
+    def parse(self):
+        return self.parse_block(TokenKind.EOF)
+
+    def parse_block(self, end: TokenKind=TokenKind.RightBrace):
+        start = self.current.span
+        statements = []
+        while self.current.kind != end:
+            statements.append(self.parse_statement())
+            self.consume_line_end()
+        self.consume(end)
+        return ast.Block(start.extend(self.current.span), statements)
 
     def parse_statement(self):
         return self.parse_expression()
@@ -114,4 +127,3 @@ class Parser:
                 raise SpanError(self.current.span, f"Unexpected token {self.current.kind}")
         self.advance()
         return out
-
