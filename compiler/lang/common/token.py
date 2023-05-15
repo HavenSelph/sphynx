@@ -12,6 +12,15 @@ class TokenKind(Enum):
     # Symbols
     LeftParen = auto()
     RightParen = auto()
+    LeftBrace = auto()
+    RightBrace = auto()
+    LeftBracket = auto()
+    RightBracket = auto()
+
+    # Delimiters
+    Comma = auto()
+    Colon = auto()
+    Semicolon = auto()
 
     # Operators
     Plus = auto()
@@ -32,6 +41,15 @@ characters = {
     # Symbols
     "(": TokenKind.LeftParen,
     ")": TokenKind.RightParen,
+    "{": TokenKind.LeftBrace,
+    "}": TokenKind.RightBrace,
+    "[": TokenKind.LeftBracket,
+    "]": TokenKind.RightBracket,
+
+    # Delimiters
+    ",": TokenKind.Comma,
+    ":": TokenKind.Colon,
+    ";": TokenKind.Semicolon,
 
     # Operators
     "+": TokenKind.Plus,
@@ -54,13 +72,13 @@ keywords = {
 
 
 class Token:
-    def __init__(self, kind: TokenKind, data: int | float | str | None, span: Span) -> None:
+    def __init__(self, kind: TokenKind, data: int | float | str | None, span: Span, new_line_before: bool) -> None:
         self.kind = kind
         self.data = data
         self.span = span
 
         # Metadata
-        self.space_after = False
+        self.new_line_before = new_line_before
 
     def __repr__(self) -> str:
-        return f"Token({self.kind}, {self.data.__repr__()}, {self.space_after=}, {self.span})"
+        return f"Token({self.kind}, {self.data.__repr__()}, {self.new_line_before=}, {self.span})"

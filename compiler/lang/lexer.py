@@ -12,6 +12,9 @@ class Lexer:
         self.cur = self.text[self.index]
         self.tokens = []
 
+        # State
+        self.new_line = True
+
     def span(self, start: Location) -> Span:
         return Span(start, self.location)
 
@@ -45,19 +48,20 @@ class Lexer:
     def push_simple(self, kind: TokenKind, size: int=1) -> None:
         start = self.location
         self.advance_many(size)
-        self.tokens.append(Token(kind, None, self.span(start)))
+        self.tokens.append(Token(kind, None, self.span(start), self.new_line))
+        self.new_line = False
 
     def push(self, kind: TokenKind, data, start: Location) -> None:
-        self.tokens.append(Token(kind, data, self.span(start)))
+        self.tokens.append(Token(kind, data, self.span(start), self.new_line))
+        self.new_line = False
 
     def lex(self) -> list[Token]:
         while self.cur:
             match self.cur:
                 case "\n":
+                    self.new_line = True
                     self.advance()
                 case char if char.isspace():
-                    if len(self.tokens) > 0:
-                        self.tokens[-1].space_after = True
                     self.advance()
                 case "/" if self.peek() == "/":  # Single-line comment
                     while self.cur and self.cur != "\n":
