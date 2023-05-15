@@ -10,6 +10,8 @@ class TokenKind(Enum):
     Const = auto()
     If = auto()
     Else = auto()
+    While = auto()
+    As = auto()
 
     # Symbols
     LeftParen = auto()
@@ -94,6 +96,10 @@ keywords = {
     "const": TokenKind.Const,
     "if": TokenKind.If,
     "else": TokenKind.Else,
+    "while": TokenKind.While,
+
+    # Postfix
+    "as": TokenKind.As,
 
     # Logical
     "and": TokenKind.And,

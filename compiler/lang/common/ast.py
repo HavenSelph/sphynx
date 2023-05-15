@@ -34,6 +34,16 @@ class If(Node):
         return f"If({self.condition}, {self.body}, {self.else_body})"
 
 
+class While(Node):
+    def __init__(self, span: Span, condition: Node, body: Node) -> None:
+        super().__init__(span)
+        self.condition = condition
+        self.body = body
+
+    def __repr__(self) -> str:
+        return f"While({self.condition}, {self.body})"
+
+
 class VariableReference(Node):
     def __init__(self, span: Span, name: str) -> None:
         super().__init__(span)
@@ -51,6 +61,16 @@ class VariableDeclaration(Node):
 
     def __repr__(self) -> str:
         return f"VariableDeclaration({self.name}, {self.value})"
+
+
+class VariableAssignment(Node):
+    def __init__(self, span: Span, name: str, value: Node) -> None:
+        super().__init__(span)
+        self.name = name
+        self.value = value
+
+    def __repr__(self) -> str:
+        return f"VariableAssignment({self.name}, {self.value})"
 
 
 class Literal(Node, ABC):
@@ -231,3 +251,11 @@ class GreaterThanOrEqual(BinaryOp):
 
     def __repr__(self):
         return f"GreaterThanOrEqual({self.left}, {self.right})"
+
+
+class Cast(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node):
+        super().__init__(span, left, right)
+
+    def __repr__(self):
+        return f"Cast({self.left}, {self.right})"

@@ -51,6 +51,7 @@ class Parser:
         match self.current.kind:
             case TokenKind.Const: raise NotImplementedError("Const statements not implemented")
             case TokenKind.If: return self.parse_if()
+            case TokenKind.While: return self.parse_while()
             case _: return self.parse_expression()
 
     def parse_if(self):
@@ -67,11 +68,24 @@ class Parser:
                 self.advance()
         return ast.If(start.extend(self.current.span), condition, body, else_body)
 
+    def parse_while(self):
+        start = self.current.span
+        self.advance()
+        condition = self.parse_expression()
+        body = self.parse_block()
+        return ast.While(start.extend(self.current.span), condition, body)
+
     def parse_expression(self):
         return self.parse_assignment()
 
     def parse_assignment(self):
-        return self.parse_logical_or()
+        left = self.parse_logical_or()
+        match self.current.kind:
+            case TokenKind.Equal:
+                self.advance()
+                right = self.parse_assignment()
+                return ast.VariableAssignment(left.span.extend(right.span), left, right)
+            case _: return left
 
     def parse_logical_or(self):
         left = self.parse_logical_and()
@@ -159,7 +173,13 @@ class Parser:
         return out
 
     def parse_postfix(self):
-        return self.parse_atom()
+        left = self.parse_atom()
+        match self.current.kind:
+            case TokenKind.As:
+                start = self.current.span
+                self.advance()
+                left = ast.Cast(start.extend(self.current.span), left, self.parse_atom())
+        return left
 
     def parse_atom(self):
         match self.current.kind:
