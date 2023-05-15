@@ -55,13 +55,14 @@ class Function(Node):
         return f"Function({self.name}, {self.args}, {self.body})"
 
 
-class VariableReference(Node):
-    def __init__(self, span: Span, name: str) -> None:
+class ConstantDeclaration(Node):
+    def __init__(self, span: Span, name: str, value: Node) -> None:
         super().__init__(span)
         self.name = name
+        self.value = value
 
     def __repr__(self) -> str:
-        return f"VariableReference({self.name})"
+        return f"ConstantDeclaration({self.name}, {self.value})"
 
 
 class VariableDeclaration(Node):
@@ -72,6 +73,15 @@ class VariableDeclaration(Node):
 
     def __repr__(self) -> str:
         return f"VariableDeclaration({self.name}, {self.value})"
+
+
+class VariableReference(Node):
+    def __init__(self, span: Span, name: str) -> None:
+        super().__init__(span)
+        self.name = name
+
+    def __repr__(self) -> str:
+        return f"VariableReference({self.name})"
 
 
 class VariableAssignment(Node):
