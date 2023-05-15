@@ -44,15 +44,15 @@ class Parser:
             statements.append(self.parse_statement())
             self.consume_line_end()
         self.consume(end)
-        print(self.current.kind)
         return ast.Block(start.extend(self.current.span), statements)
 
     def parse_statement(self):
         match self.current.kind:
-            case TokenKind.Const: raise NotImplementedError("Const statements not implemented")
             case TokenKind.If: return self.parse_if()
             case TokenKind.While: return self.parse_while()
             case TokenKind.Fn: return self.parse_function()
+            case TokenKind.Const: return self.parse_const()
+            case TokenKind.Let: return self.parse_let()
             case _: return self.parse_expression()
 
     def parse_if(self):
@@ -89,6 +89,22 @@ class Parser:
         self.consume(TokenKind.RightParen, "Maybe you forgot a comma?")
         body = self.parse_block()
         return ast.Function(start.extend(self.current.span), name, parameters, body)
+
+    def parse_const(self):
+        start = self.current.span
+        self.advance()
+        name = self.consume(TokenKind.Identifier).data
+        self.consume(TokenKind.Equal)
+        value = self.parse_expression()
+        return ast.ConstantDeclaration(start.extend(self.current.span), name, value)
+
+    def parse_let(self):
+        start = self.current.span
+        self.advance()
+        name = self.consume(TokenKind.Identifier).data
+        self.consume(TokenKind.Equal)
+        value = self.parse_expression()
+        return ast.VariableDeclaration(start.extend(self.current.span), name, value)
 
     def parse_expression(self):
         return self.parse_assignment()

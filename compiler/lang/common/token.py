@@ -8,6 +8,7 @@ class TokenKind(Enum):
 
     # Keywords
     Const = auto()
+    Let = auto()
     If = auto()
     Else = auto()
     While = auto()
@@ -95,6 +96,7 @@ characters_match = [key[0] for key in sorted_keys]
 keywords = {
     # Assignment
     "const": TokenKind.Const,
+    "let": TokenKind.Let,
 
     # Control flow
     "if": TokenKind.If,
