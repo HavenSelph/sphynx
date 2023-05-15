@@ -7,7 +7,9 @@ class TokenKind(Enum):
     EOF = auto()
 
     # Keywords
-    Let = auto()
+    Const = auto()
+    If = auto()
+    Else = auto()
 
     # Symbols
     LeftParen = auto()
@@ -23,12 +25,26 @@ class TokenKind(Enum):
     Semicolon = auto()
 
     # Operators
+    Equal = auto()
     Plus = auto()
     Minus = auto()
     Star = auto()
     StarStar = auto()
     Slash = auto()
     Percent = auto()
+
+    # Logical
+    And = auto()
+    Or = auto()
+    Not = auto()
+
+    # Comparison
+    EqualEqual = auto()
+    BangEqual = auto()
+    LessThan = auto()
+    LessThanEqual = auto()
+    GreaterThan = auto()
+    GreaterThanEqual = auto()
 
     # Literals
     Identifier = auto()
@@ -52,13 +68,21 @@ characters = {
     ";": TokenKind.Semicolon,
 
     # Operators
+    "=": TokenKind.Equal,
     "+": TokenKind.Plus,
     "-": TokenKind.Minus,
     "*": TokenKind.Star,
     "**": TokenKind.StarStar,
     "/": TokenKind.Slash,
-    "//": TokenKind.Slash,
-    "%": TokenKind.Percent
+    "%": TokenKind.Percent,
+
+    # Comparison
+    "==": TokenKind.EqualEqual,
+    "!=": TokenKind.BangEqual,
+    "<": TokenKind.LessThan,
+    "<=": TokenKind.LessThanEqual,
+    ">": TokenKind.GreaterThan,
+    ">=": TokenKind.GreaterThanEqual,
 }
 
 sorted_keys = sorted(characters.keys(), key=lambda x: len(x), reverse=True)
@@ -67,7 +91,14 @@ characters_match = [key[0] for key in sorted_keys]
 
 keywords = {
     # Assignment
-    "let": TokenKind.Let,
+    "const": TokenKind.Const,
+    "if": TokenKind.If,
+    "else": TokenKind.Else,
+
+    # Logical
+    "and": TokenKind.And,
+    "or": TokenKind.Or,
+    "not": TokenKind.Not
 }
 
 

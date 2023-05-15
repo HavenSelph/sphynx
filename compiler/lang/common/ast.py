@@ -23,6 +23,17 @@ class Block(Node):
         return f"Block({newline if self.statements else ''}{newline.join(map(repr, self.statements))}{newline if self.statements else ''})"
 
 
+class If(Node):
+    def __init__(self, span: Span, condition: Node, body: Node, else_body: Node) -> None:
+        super().__init__(span)
+        self.condition = condition
+        self.body = body
+        self.else_body = else_body
+
+    def __repr__(self) -> str:
+        return f"If({self.condition}, {self.body}, {self.else_body})"
+
+
 class VariableReference(Node):
     def __init__(self, span: Span, name: str) -> None:
         super().__init__(span)
@@ -92,12 +103,12 @@ class Negate(UnaryOp):
         return f"Negate({self.value})"
 
 
-# class Not(UnaryOp):
-#     def __init__(self, span: Span, value: Node) -> None:
-#         super().__init__(span, value)
-#
-#     def __repr__(self) -> str:
-#         return f"Not({self.value})"
+class Not(UnaryOp):
+    def __init__(self, span: Span, value: Node) -> None:
+        super().__init__(span, value)
+
+    def __repr__(self) -> str:
+        return f"Not({self.value})"
 
 
 class BinaryOp(Node, ABC):
@@ -157,3 +168,66 @@ class Modulo(BinaryOp):
     def __repr__(self) -> str:
         return f"Modulo({self.left}, {self.right})"
 
+
+class LogicalAnd(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node) -> None:
+        super().__init__(span, left, right)
+
+    def __repr__(self) -> str:
+        return f"LogicalAnd({self.left}, {self.right})"
+
+
+class LogicalOr(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node) -> None:
+        super().__init__(span, left, right)
+
+    def __repr__(self) -> str:
+        return f"LogicalOr({self.left}, {self.right})"
+
+
+class EqualEqual(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node) -> None:
+        super().__init__(span, left, right)
+
+    def __repr__(self):
+        return f"EqualEqual({self.left}, {self.right})"
+
+
+class NotEqual(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node) -> None:
+        super().__init__(span, left, right)
+
+    def __repr__(self):
+        return f"NotEqual({self.left}, {self.right})"
+
+
+class LessThan(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node):
+        super().__init__(span, left, right)
+
+    def __repr__(self):
+        return f"LessThan({self.left}, {self.right})"
+
+
+class LessThanOrEqual(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node):
+        super().__init__(span, left, right)
+
+    def __repr__(self):
+        return f"LessThanOrEqual({self.left}, {self.right})"
+
+
+class GreaterThan(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node):
+        super().__init__(span, left, right)
+
+    def __repr__(self):
+        return f"GreaterThan({self.left}, {self.right})"
+
+
+class GreaterThanOrEqual(BinaryOp):
+    def __init__(self, span: Span, left: Node, right: Node):
+        super().__init__(span, left, right)
+
+    def __repr__(self):
+        return f"GreaterThanOrEqual({self.left}, {self.right})"

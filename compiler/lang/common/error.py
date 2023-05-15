@@ -29,7 +29,7 @@ class SpanError(SphynxError):
                 line = line[:self.span.start.column-1] + f"\u001b[31m{line[self.span.start.column-1:self.span.end.column]}\u001b[0m" + line[self.span.end.column:]
                 print(f"{line_number} │{line}")
                 connector = "└" if line_num+1 == max_line else "├"
-                print(f"{' '*(line_no_width+1)}{connector}{'─' * (self.span.start.column-1)}\u001b[31m{'^' * (self.span.end.column - self.span.start.column+1)}\u001b[0m {self.flag_text}")
+                print(f"{' '*(line_no_width+1)}{connector}{'─' * (self.span.start.column-1)}\u001b[31m{'^' * (self.span.end.column - self.span.start.column)}\u001b[0m {self.flag_text}")
             else:
                 print(f"{line_number} │{line}")
 

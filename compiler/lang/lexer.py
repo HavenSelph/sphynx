@@ -7,25 +7,29 @@ class Lexer:
     def __init__(self, filename: str, text: str) -> None:
         self.filename = filename
         self.text = text
-        self.location = Location(filename, 1, 1, 0)
         self.index = 0
+        self.line = 1
+        self.column = 1
         self.cur = self.text[self.index]
         self.tokens = []
 
         # State
         self.new_line = True
 
+    @property
+    def location(self) -> Location:
+        return Location(self.filename, self.line, self.column, self.index)
+
     def span(self, start: Location) -> Span:
         return Span(start, self.location)
 
     def advance(self) -> None:
         if self.cur == "\n":
-            self.location.line += 1
-            self.location.column = 1
+            self.line += 1
+            self.column = 1
         else:
-            self.location.column += 1
+            self.column += 1
         self.index += 1
-        self.location.index += 1
         if self.index >= len(self.text):
             self.cur = None
             return
@@ -61,8 +65,7 @@ class Lexer:
                 case "\n":
                     self.new_line = True
                     self.advance()
-                case char if char.isspace():
-                    self.advance()
+                case char if char.isspace(): self.advance()
                 case "/" if self.peek() == "/":  # Single-line comment
                     while self.cur and self.cur != "\n":
                         self.advance()
@@ -72,12 +75,8 @@ class Lexer:
                     if self.peek_slice(2) != "*/":
                         raise SpanError(self.span(self.location), "Expected '*/'")
                     self.advance_many(2)
-                case char if char.isalpha() or char == "_":
-                    self.lex_identifier()
-                case char if char.isdigit():
-                    self.lex_number()
-                case char if char == "." and self.peek().isdigit():
-                    self.lex_number()
+                case char if char.isalpha() or char == "_": self.lex_identifier()
+                case char if char.isdigit() or char == ".": self.lex_number()
                 case char if char in characters_match:  # Symbols and operators
                     for key in characters:
                         if self.peek_slice(len(key)) == key:
