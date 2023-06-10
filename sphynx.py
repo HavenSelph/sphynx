@@ -9,6 +9,8 @@ from compiler.lang import lexer as _lexer, parser as _parser, compiler as _compi
 
 argparser = argparse.ArgumentParser(description="Compiler for Sphynx-Language (.spx)")
 argparser.add_argument("file", type=str, help="The file to compile")
+argparser.add_argument("-dcg", "--disable-code-gen", action="store_true", help="Don't generate code for the output file.")
+argparser.add_argument("-n", "--no-compile", action="store_true", help="Don't compile the output file.")
 argparser.add_argument("-o", "--output", type=str, help="The output file")
 argparser.add_argument("-v", "--verbose", action="store_true", help="Prints extra information during compilation")
 args = argparser.parse_args()
@@ -44,10 +46,11 @@ if args.verbose:
     print(f"Parsed in {perf_counter() - start:.4f}s")
     print(ast)
 
-try:
-    comp = _compiler.Compiler(str(file), ast)
-    comp.compile()
-except compiler.lang.common.error.SphynxError as e:
-    e.print_error()
-    raise
+if not args.disable_code_gen:
+    try:
+        comp = _compiler.Compiler(str(file), ast)
+        comp.compile()
+    except compiler.lang.common.error.SphynxError as e:
+        e.print_error()
+        raise
 print(f"Finished in {perf_counter() - start:.4f}s")
