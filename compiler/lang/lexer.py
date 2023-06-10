@@ -66,6 +66,7 @@ class Lexer:
 
     def lex(self) -> list[Token]:
         while self.cur:
+            loc = self.location
             match self.cur:
                 case "\n":
                     self.new_line = True
@@ -78,35 +79,32 @@ class Lexer:
                     while self.cur and self.peek_slice(2) != "*/":
                         self.advance()
                     if self.peek_slice(2) != "*/":
-                        raise SpanError(self.span(self.location), "Expected '*/'")
+                        raise SpanError(self.span(loc), "Expected '*/'")
                     self.advance_many(2)
-                case char if char.isalpha() or char == "_": self.lex_identifier()
-                case char if char.isdigit() or char == ".": self.lex_number()
+                case char if char.isalpha() or char == "_": self.lex_identifier(loc)
+                case char if char.isdigit() or char == ".": self.lex_number(loc)
                 case char if char in characters_match:  # Symbols and operators
                     for key in characters:
                         if self.peek_slice(len(key)) == key:
-                            start = self.location
                             self.advance_many(len(key))
-                            self.push(characters[key], None, start)
+                            self.push(characters[key], None, loc)
                             break
                     else:
-                        raise SpanError(self.span(self.location), f"Unexpected character '{self.cur}'")
+                        raise SpanError(self.span(loc), f"Unexpected character '{self.cur}'")
                 case _:
-                    raise SpanError(self.span(self.location), f"Unexpected character '{self.cur}'")
+                    raise SpanError(self.span(loc), f"Unexpected character '{self.cur}'")
         self.push_simple(TokenKind.EOF)
         return self.tokens
 
-    def lex_identifier(self) -> None:
-        start = self.location
+    def lex_identifier(self, loc) -> None:
         identifier = ""
         while self.cur and (self.cur.isalnum() or self.cur == "_"):
             identifier += self.cur
             self.advance()
         kind = keywords.get(identifier, TokenKind.Identifier)
-        self.push(kind, identifier, start)
+        self.push(kind, identifier, loc)
 
-    def lex_number(self) -> None:
-        start = self.location
+    def lex_number(self, loc) -> None:
         number = ""
         number += self.lex_integer()
         if self.cur == ".":
@@ -114,10 +112,10 @@ class Lexer:
             self.advance()
             number += self.lex_integer()
             if self.cur == ".":
-                raise SpanError(self.span(start), "Unexpected '.'", "Floats cannot have multiple decimal points.")
-            self.push(TokenKind.Float, float(number), start)
+                raise SpanError(self.span(loc), "Unexpected '.'", "Floats cannot have multiple decimal points.")
+            self.push(TokenKind.Float, float(number), loc)
         else:
-            self.push(TokenKind.Integer, int(number), start)
+            self.push(TokenKind.Integer, int(number), loc)
 
     def lex_integer(self):
         out = ""

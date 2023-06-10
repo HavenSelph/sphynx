@@ -43,8 +43,8 @@ class Parser:
         while self.current.kind != end:
             statements.append(self.parse_statement())
             self.consume_line_end()
-        self.consume(end)
-        return ast.Block(start.extend(self.current.span), statements)
+        end = self.consume(end)
+        return ast.Block(start.extend(end.span), statements)
 
     def parse_statement(self):
         match self.current.kind:
@@ -67,14 +67,14 @@ class Parser:
         match self.current.kind:
             case TokenKind.Else:
                 self.advance()
-        return ast.If(start.extend(self.current.span), condition, body, else_body)
+        return ast.If(start.extend(else_body.span if else_body else body.span), condition, body, else_body)
 
     def parse_while(self):
         start = self.current.span
         self.advance()
         condition = self.parse_expression()
         body = self.parse_block()
-        return ast.While(start.extend(self.current.span), condition, body)
+        return ast.While(start.extend(body.span), condition, body)
 
     def parse_function(self):
         start = self.current.span
@@ -88,7 +88,7 @@ class Parser:
                 break
         self.consume(TokenKind.RightParen, "Maybe you forgot a comma?")
         body = self.parse_block()
-        return ast.Function(start.extend(self.current.span), name, parameters, body)
+        return ast.Function(start.extend(body.span), name, parameters, body)
 
     def parse_const(self):
         start = self.current.span
@@ -96,7 +96,7 @@ class Parser:
         name = self.consume(TokenKind.Identifier).data
         self.consume(TokenKind.Equal)
         value = self.parse_expression()
-        return ast.ConstantDeclaration(start.extend(self.current.span), name, value)
+        return ast.ConstantDeclaration(start.extend(value.span), name, value)
 
     def parse_let(self):
         start = self.current.span
@@ -104,7 +104,7 @@ class Parser:
         name = self.consume(TokenKind.Identifier).data
         self.consume(TokenKind.Equal)
         value = self.parse_expression()
-        return ast.VariableDeclaration(start.extend(self.current.span), name, value)
+        return ast.VariableDeclaration(start.extend(value.span), name, value)
 
     def parse_expression(self):
         return self.parse_assignment()
@@ -122,14 +122,14 @@ class Parser:
         left = self.parse_logical_and()
         while self.current.kind == TokenKind.Or:
             self.advance()
-            left = ast.LogicalOr(left.span.extend(self.current.span), left, self.parse_logical_and())
+            left = ast.LogicalOr(left, self.parse_logical_and())
         return left
 
     def parse_logical_and(self):
         left = self.parse_comparison()
         while self.current.kind == TokenKind.And:
             self.advance()
-            left = ast.LogicalAnd(left.span.extend(self.current.span), left, self.parse_comparison())
+            left = ast.LogicalAnd(left, self.parse_comparison())
         return left
 
     def parse_comparison(self):
@@ -137,22 +137,22 @@ class Parser:
         match self.current.kind:
             case TokenKind.EqualEqual:
                 self.advance()
-                left = ast.EqualEqual(left.span.extend(self.current.span), left, self.parse_additive())
+                left = ast.EqualEqual(left, self.parse_additive())
             case TokenKind.BangEqual:
                 self.advance()
-                left = ast.NotEqual(left.span.extend(self.current.span), left, self.parse_additive())
+                left = ast.NotEqual(left, self.parse_additive())
             case TokenKind.LessThan:
                 self.advance()
-                left = ast.LessThan(left.span.extend(self.current.span), left, self.parse_additive())
+                left = ast.LessThan(left, self.parse_additive())
             case TokenKind.LessThanEqual:
                 self.advance()
-                left = ast.LessThanOrEqual(left.span.extend(self.current.span), left, self.parse_additive())
+                left = ast.LessThanOrEqual(left, self.parse_additive())
             case TokenKind.GreaterThan:
                 self.advance()
-                left = ast.GreaterThan(left.span.extend(self.current.span), left, self.parse_additive())
+                left = ast.GreaterThan(left, self.parse_additive())
             case TokenKind.GreaterThanEqual:
                 self.advance()
-                left = ast.GreaterThanOrEqual(left.span.extend(self.current.span), left, self.parse_additive())
+                left = ast.GreaterThanOrEqual(left, self.parse_additive())
         return left
 
     def parse_additive(self):
@@ -160,17 +160,17 @@ class Parser:
         while self.current.kind in [TokenKind.Plus, TokenKind.Minus]:
             if self.current.kind == TokenKind.Plus:
                 self.advance()
-                left = ast.Add(left.span.extend(self.current.span), left, self.parse_exponential())
+                left = ast.Add(left, self.parse_exponential())
             elif self.current.kind == TokenKind.Minus:
                 self.advance()
-                left = ast.Subtract(left.span.extend(self.current.span), left, self.parse_exponential())
+                left = ast.Subtract(left, self.parse_exponential())
         return left
 
     def parse_exponential(self):
         left = self.parse_multiplicative()
         while self.current.kind == TokenKind.StarStar:
             self.advance()
-            left = ast.Power(left.span.extend(self.current.span), left, self.parse_multiplicative())
+            left = ast.Power(left, self.parse_multiplicative())
         return left
 
     def parse_multiplicative(self):
@@ -178,10 +178,10 @@ class Parser:
         while self.current.kind in [TokenKind.Star, TokenKind.Slash]:
             if self.current.kind == TokenKind.Star:
                 self.advance()
-                left = ast.Multiply(left.span.extend(self.current.span), left, self.parse_prefix())
+                left = ast.Multiply(left, self.parse_prefix())
             elif self.current.kind == TokenKind.Slash:
                 self.advance()
-                left = ast.Divide(left.span.extend(self.current.span), left, self.parse_prefix())
+                left = ast.Divide(left, self.parse_prefix())
         return left
 
     def parse_prefix(self):
@@ -209,7 +209,7 @@ class Parser:
             case TokenKind.As:
                 start = left.span
                 self.advance()
-                left = ast.Cast(start.extend(self.current.span), left, self.parse_atom())
+                left = ast.Cast(left, self.parse_atom())
             case TokenKind.Colon:
                 start = left.span
                 self.advance()

@@ -153,8 +153,8 @@ class Not(UnaryOp):
 
 
 class BinaryOp(Node, ABC):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left.span.extend(right.span))
         self.left = left
         self.right = right
 
@@ -163,120 +163,120 @@ class BinaryOp(Node, ABC):
 
 
 class Add(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"Add({self.left}, {self.right})"
 
 
 class Subtract(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"Subtract({self.left}, {self.right})"
 
 
 class Power(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"Power({self.left}, {self.right})"
 
 
 class Multiply(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"Multipy({self.left}, {self.right})"
 
 
 class Divide(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"Divide({self.left}, {self.right})"
 
 
 class Modulo(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"Modulo({self.left}, {self.right})"
 
 
 class LogicalAnd(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"LogicalAnd({self.left}, {self.right})"
 
 
 class LogicalOr(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self) -> str:
         return f"LogicalOr({self.left}, {self.right})"
 
 
 class EqualEqual(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self):
         return f"EqualEqual({self.left}, {self.right})"
 
 
 class NotEqual(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node) -> None:
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node) -> None:
+        super().__init__(left, right)
 
     def __repr__(self):
         return f"NotEqual({self.left}, {self.right})"
 
 
 class LessThan(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node):
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node):
+        super().__init__(left, right)
 
     def __repr__(self):
         return f"LessThan({self.left}, {self.right})"
 
 
 class LessThanOrEqual(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node):
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node):
+        super().__init__(left, right)
 
     def __repr__(self):
         return f"LessThanOrEqual({self.left}, {self.right})"
 
 
 class GreaterThan(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node):
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node):
+        super().__init__(left, right)
 
     def __repr__(self):
         return f"GreaterThan({self.left}, {self.right})"
 
 
 class GreaterThanOrEqual(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node):
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node):
+        super().__init__(left, right)
 
     def __repr__(self):
         return f"GreaterThanOrEqual({self.left}, {self.right})"
 
 
 class Cast(BinaryOp):
-    def __init__(self, span: Span, left: Node, right: Node):
-        super().__init__(span, left, right)
+    def __init__(self, left: Node, right: Node):
+        super().__init__(left, right)
 
     def __repr__(self):
         return f"Cast({self.left}, {self.right})"
