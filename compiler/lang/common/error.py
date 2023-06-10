@@ -21,18 +21,23 @@ class SpanError(SphynxError):
         with open(self.span.filename, "r") as f:
             lines = [line.rstrip() for line in f.readlines()]
         context = 2
-        min_line = max(0, self.span.start.line - context)
-        max_line = min(len(lines), self.span.end.line + context)
-        line_no_width = max(3, len(str(max_line)))
-        for line_num, line in enumerate(lines[min_line:max_line], start=min_line):
-            line_number = f"{line_num+1:0>{line_no_width}}"
-            if line_num + 1 == self.span.start.line:
-                line = line[:self.span.start.column-1] + f"\u001b[31m{line[self.span.start.column-1:self.span.end.column-1]}\u001b[0m" + line[self.span.end.column-1:]
-                print(f"{line_number} │{line}")
-                connector = "└" if line_num+1 == max_line else "├"
-                print(f"{' '*(line_no_width+1)}{connector}{'─' * (self.span.start.column-1)}\u001b[31m{'^' * (self.span.end.column - self.span.start.column)}\u001b[0m {self.flag_text}")
+        start = self.span.start
+        end = self.span.end
+        min_line = max(0, start.line - context)
+        max_line = min(len(lines), end.line + context)
+
+        for line_n in range(min_line, max_line):
+            line = lines[line_n]
+            if start.line - 1 <= line_n < end.line:
+                highlight_start = start.column - 1 if line_n == start.line - 1 else 0
+                highlight_end = end.column - 1 if line_n == end.line - 1 else len(line)
+                print(f"{line_n:0>3} | {line[:highlight_start]}\u001b[31m{line[highlight_start:highlight_end]}\u001b[0m{line[highlight_end:]}")
+                if start.line == end.line:
+                    print("    | " + "-" * highlight_start + "\u001b[31m" + "^" * (highlight_end - highlight_start) + "\u001b[0m")
+                    if self.flag_text:
+                        print("    | " + " " * highlight_start + "\u001b[31m" + self.flag_text + "\u001b[0m")
             else:
-                print(f"{line_number} │{line}")
+                print(f"{line_n:0>3} | {line}")
 
 
 class GenericError(SphynxError):
