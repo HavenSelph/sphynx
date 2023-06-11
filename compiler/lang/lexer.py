@@ -15,7 +15,7 @@ class Lexer:
         self.index = 0
         self.line = 1
         self.column = 1
-        self.cur = self.text[self.index]
+        self.cur = self.text[self.index] if len(self.text) > 0 else None
         self.tokens = []
 
         # State
