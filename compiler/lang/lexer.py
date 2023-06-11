@@ -83,6 +83,7 @@ class Lexer:
                     self.advance_many(2)
                 case char if char.isalpha() or char == "_": self.lex_identifier(loc)
                 case char if char.isdigit() or char == ".": self.lex_number(loc)
+                case "'" | '"': self.lex_string(loc, self.cur)
                 case char if char in characters_match:  # Symbols and operators
                     for key in characters:
                         if self.peek_slice(len(key)) == key:
@@ -125,3 +126,22 @@ class Lexer:
             while self.cur == "_":
                 self.advance()
         return out
+
+    def lex_string(self, loc, quote) -> None:
+        out = ""
+        while self.cur and self.cur != quote:
+            if self.cur == "\\":
+                self.advance()
+                match self.cur:
+                    case "n": out += "\n"
+                    case "t": out += "\t"
+                    case "r": out += "\r"
+                    case "0": out += "\0"
+                    case "\\": out += "\\"
+                    case char if char==quote: out += quote
+                    case _:
+                        raise SpanError(self.span(loc), f"Unexpected escape character '{self.cur}'")
+        if self.cur != quote:
+            raise SpanError(self.span(loc), "Expected closing quote")
+        self.advance()
+        self.push(TokenKind.String, out, loc)
