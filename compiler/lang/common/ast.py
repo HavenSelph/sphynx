@@ -152,6 +152,16 @@ class Not(UnaryOp):
         return f"Not({self.value})"
 
 
+class Call(Node):
+    def __init__(self, span: Span, name: str, args: list[Node]) -> None:
+        super().__init__(span)
+        self.name = name
+        self.args = args
+
+    def __repr__(self) -> str:
+        return f"Call({self.name}, {self.args})"
+
+
 class BinaryOp(Node, ABC):
     def __init__(self, left: Node, right: Node) -> None:
         super().__init__(left.span.extend(right.span))
