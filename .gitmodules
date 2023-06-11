@@ -1,3 +1,5 @@
 [submodule "runtime"]
 	path = runtime
 	url = git@github.com:HavenSelph/rattlescript-runtime.git
+[submodule "./runtime"]
+	branch = main
