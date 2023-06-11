@@ -16,7 +16,7 @@ class SpanError(SphynxError):
 
     def print_error(self) -> None:
         """Prints the error to the terminal."""
-        # todo: multiline errors don't work, fix that
+        # todo: spans are fucked, fix it
         print(self.span)
         print(f"{self.color}{self.message}\u001b[0m")
         with open(self.span.filename, "r") as f:
