@@ -41,7 +41,7 @@ try:
     ast = parser.parse()
 except compiler.lang.common.error.SphynxError as e:
     e.print_error()
-    raise
+    exit(1)
 if args.verbose:
     print(f"Parsed in {perf_counter() - start:.4f}s")
     print(ast)
@@ -52,5 +52,8 @@ if not args.disable_code_gen:
         comp.compile()
     except compiler.lang.common.error.SphynxError as e:
         e.print_error()
-        raise
+        exit(1)
+    if args.verbose:
+        print(f"Compiled in {perf_counter() - start:.4f}s")
+        print(comp.out)
 print(f"Finished in {perf_counter() - start:.4f}s")
