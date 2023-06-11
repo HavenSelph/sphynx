@@ -115,7 +115,7 @@ class Parser:
             case TokenKind.Equal:
                 self.advance()
                 right = self.parse_assignment()
-                return ast.VariableAssignment(left.span.extend(right.span), left, right)
+                return ast.VariableAssignment(left.span.extend(right.span), left.name, right)
             case _: return left
 
     def parse_logical_or(self):
@@ -205,15 +205,25 @@ class Parser:
 
     def parse_postfix(self):
         left = self.parse_atom()
+        start = left.span
         match self.current.kind:
             case TokenKind.As:
-                start = left.span
                 self.advance()
                 left = ast.Cast(left, self.parse_atom())
             case TokenKind.Colon:
-                start = left.span
                 self.advance()
                 raise SpanError(start.extend(self.current.span), "Type annotations are not yet supported")
+            case TokenKind.LeftParen:
+                self.advance()
+                arguments = []
+                while self.current.kind != TokenKind.RightParen:
+                    arguments.append(self.parse_expression())
+                    if self.current.kind == TokenKind.Comma:
+                        self.advance()
+                    else:
+                        break
+                end = self.consume(TokenKind.RightParen, "Expected closing parenthesis").span
+                left = ast.Call(start.extend(end), left, arguments)
         return left
 
     def parse_atom(self):
